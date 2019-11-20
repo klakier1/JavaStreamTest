@@ -1,9 +1,12 @@
-package streamTest;
+package streamTest.api;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Java8Api implements StreamTest<TimesheetRow> {
+import streamTest.StreamTestable;
+import streamTest.TimesheetRow;
+
+public class Java8Api implements StreamTestable<TimesheetRow> {
 
 	@Override
 	public List<TimesheetRow> getResult(List<TimesheetRow> tsrLoc, List<TimesheetRow> tsrExt) {

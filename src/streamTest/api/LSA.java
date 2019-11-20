@@ -1,11 +1,14 @@
-package streamTest;
+package streamTest.api;
 
 import com.annimon.stream.Stream;
 import com.annimon.stream.function.Predicate;
 
+import streamTest.StreamTestable;
+import streamTest.TimesheetRow;
+
 import java.util.List;
 
-public class LSA implements StreamTest<TimesheetRow> {
+public class LSA implements StreamTestable<TimesheetRow> {
 
 	@Override
 	public List<TimesheetRow> getResult(List<TimesheetRow> tsrLoc, List<TimesheetRow> tsrExt) {

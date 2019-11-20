@@ -1,4 +1,4 @@
-package streamTest;
+package streamTest.api;
 
 import static java8.util.stream.Collectors.toList;
 
@@ -6,8 +6,10 @@ import java.util.List;
 
 import java8.util.function.Predicate;
 import java8.util.stream.StreamSupport;
+import streamTest.StreamTestable;
+import streamTest.TimesheetRow;
 
-public class StreamSupport171 implements StreamTest<TimesheetRow> {
+public class StreamSupport171 implements StreamTestable<TimesheetRow> {
 
 	@Override
 	public List<TimesheetRow> getResult(List<TimesheetRow> tsrLoc, List<TimesheetRow> tsrExt) {

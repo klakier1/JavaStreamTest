@@ -1,9 +1,12 @@
-package streamTest;
+package streamTest.api;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Loops implements StreamTest<TimesheetRow> {
+import streamTest.StreamTestable;
+import streamTest.TimesheetRow;
+
+public class Loops implements StreamTestable<TimesheetRow> {
 
 	@Override
 	public List<TimesheetRow> getResult(List<TimesheetRow> tsrLoc, List<TimesheetRow> tsrExt) {
