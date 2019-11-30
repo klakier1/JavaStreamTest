@@ -84,7 +84,11 @@ public class TimesheetRow implements Cloneable {
         this.userId = userId;
     }
 
-    public Date getDate() {
+    public byte byteValue() {
+		return userId.byteValue();
+	}
+
+	public Date getDate() {
         return date;
     }
 
@@ -168,7 +172,98 @@ public class TimesheetRow implements Cloneable {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Timestamp updatedAt) {
+    @Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((comments == null) ? 0 : comments.hashCode());
+		result = prime * result + ((companyId == null) ? 0 : companyId.hashCode());
+		result = prime * result + ((createdAt == null) ? 0 : createdAt.hashCode());
+		result = prime * result + ((customerBreak == null) ? 0 : customerBreak.hashCode());
+		result = prime * result + ((date == null) ? 0 : date.hashCode());
+		result = prime * result + ((from == null) ? 0 : from.hashCode());
+		result = prime * result + ((projectId == null) ? 0 : projectId.hashCode());
+		result = prime * result + ((status == null) ? 0 : status.hashCode());
+		result = prime * result + ((statutoryBreak == null) ? 0 : statutoryBreak.hashCode());
+		result = prime * result + ((to == null) ? 0 : to.hashCode());
+		result = prime * result + ((updatedAt == null) ? 0 : updatedAt.hashCode());
+		result = prime * result + ((userId == null) ? 0 : userId.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		TimesheetRow other = (TimesheetRow) obj;
+		if (comments == null) {
+			if (other.comments != null)
+				return false;
+		} else if (!comments.equals(other.comments))
+			return false;
+		if (companyId == null) {
+			if (other.companyId != null)
+				return false;
+		} else if (!companyId.equals(other.companyId))
+			return false;
+		if (createdAt == null) {
+			if (other.createdAt != null)
+				return false;
+		} else if (!createdAt.equals(other.createdAt))
+			return false;
+		if (customerBreak == null) {
+			if (other.customerBreak != null)
+				return false;
+		} else if (!customerBreak.equals(other.customerBreak))
+			return false;
+		if (date == null) {
+			if (other.date != null)
+				return false;
+		} else if (!date.equals(other.date))
+			return false;
+		if (from == null) {
+			if (other.from != null)
+				return false;
+		} else if (!from.equals(other.from))
+			return false;
+		if (projectId == null) {
+			if (other.projectId != null)
+				return false;
+		} else if (!projectId.equals(other.projectId))
+			return false;
+		if (status == null) {
+			if (other.status != null)
+				return false;
+		} else if (!status.equals(other.status))
+			return false;
+		if (statutoryBreak == null) {
+			if (other.statutoryBreak != null)
+				return false;
+		} else if (!statutoryBreak.equals(other.statutoryBreak))
+			return false;
+		if (to == null) {
+			if (other.to != null)
+				return false;
+		} else if (!to.equals(other.to))
+			return false;
+		if (updatedAt == null) {
+			if (other.updatedAt != null)
+				return false;
+		} else if (!updatedAt.equals(other.updatedAt))
+			return false;
+		if (userId == null) {
+			if (other.userId != null)
+				return false;
+		} else if (!userId.equals(other.userId))
+			return false;
+		return true;
+	}
+
+	public void setUpdatedAt(Timestamp updatedAt) {
         this.updatedAt = updatedAt;
     }
 
@@ -176,4 +271,11 @@ public class TimesheetRow implements Cloneable {
             CloneNotSupportedException {
         return super.clone();
     }
+
+	@Override
+	public String toString() {
+		return "TimesheetRow [idExternal=" + idExternal + ", idLocal=" + idLocal + ", updatedAt=" + updatedAt + "]";
+	}
+    
+    
 }

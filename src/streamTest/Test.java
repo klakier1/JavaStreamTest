@@ -1,17 +1,13 @@
 package streamTest;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
+import static java.lang.Math.abs;
 
 import streamTest.api.Java8Api;
 import streamTest.api.LSA;
 import streamTest.api.Loops;
 import streamTest.api.StreamSupport171;
-
-import java.sql.Date;
-import java.sql.Time;
-import java.sql.Timestamp;
 
 public class Test {
 
@@ -33,43 +29,102 @@ public class Test {
 		}
 	}
 
-
 	public static void main(String args[]) {
-		System.out.println("Start...");
-		int no = 100;
 
-		Calendar calendar = Calendar.getInstance();
-		Date today = Date.valueOf(calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH) + 1) + "-"
-				+ calendar.get(Calendar.DAY_OF_MONTH));
-		Time timeFromDef = Time.valueOf("07:00:00");
-		Time timeToDef = Time.valueOf("15:00:00");
-		Time timeCustomerBreakDef = Time.valueOf("00:15:00");
-		Time timeStatutoryBreakDef = Time.valueOf("00:15:00");
-		Timestamp min = Timestamp.valueOf("2018-10-22 21:01:41.540052");
-		Timestamp max = Timestamp.valueOf("2020-10-22 21:01:41.540052");
+		Dataset dataset = new Dataset();
+		List<TimesheetRow> tsrExt = dataset.getExtDataSet();
+		List<TimesheetRow> tsrLoc = dataset.getLocDataSet();
 
-		List<TimesheetRow> tsrExt = new ArrayList<TimesheetRow>();
-		tsrExt.add(new TimesheetRow(1, 10, today, timeFromDef, timeToDef, timeCustomerBreakDef, timeStatutoryBreakDef,
-				null, 0, 0, false, null, Timestamp.valueOf("2019-10-22 21:01:41.540052")));
-		for (int i = 2; i < no; i++) {
-			tsrExt.add(new TimesheetRow(i, 10, today, timeFromDef, timeToDef, timeCustomerBreakDef,
-					timeStatutoryBreakDef, null, 0, 0, false, null, TimestampUtils.nextDate(min, max)));
-		}
+		System.out.println("EXT********************************************");
+		tsrExt.forEach(e -> System.out.println(e.toString()));
+		System.out.println("LOC********************************************");
+		tsrLoc.forEach(l -> System.out.println(l.toString()));
 
-		List<TimesheetRow> tsrLoc = new ArrayList<TimesheetRow>();
-		tsrLoc.add(new TimesheetRow(1, 10, today, timeFromDef, timeToDef, timeCustomerBreakDef, timeStatutoryBreakDef,
-				null, 0, 0, false, null, Timestamp.valueOf("2019-10-22 21:01:41.540052")));
-		for (int i = 2; i < no; i++) {
-			tsrLoc.add(new TimesheetRow(i, 10, today, timeFromDef, timeToDef, timeCustomerBreakDef,
-					timeStatutoryBreakDef, null, 0, 0, false, null, TimestampUtils.nextDate(min, max)));
-		}
+		List<TimesheetRow> AddToLoc = new ArrayList<TimesheetRow>();
+		List<TimesheetRow> AddToExt = new ArrayList<TimesheetRow>();
+		List<TimesheetRow> DeleteFromLoc = new ArrayList<TimesheetRow>();
+		List<TimesheetRow> DeleteFromExt = new ArrayList<TimesheetRow>();
+		List<TimesheetRow> NewerInLoc = new ArrayList<TimesheetRow>();
+		List<TimesheetRow> NewerInExt = new ArrayList<TimesheetRow>();
+		List<TimesheetRow> Equals = new ArrayList<TimesheetRow>();
+		List<TimesheetRow> NotEquals = new ArrayList<TimesheetRow>();
 
-		UpdateTest test = new UpdateTest();
-		test.makeTest(tsrLoc, tsrExt);
+		tsrExt.stream().forEach(e -> {
+			TimesheetRow loc = tsrLoc.stream().filter(l -> e.getIdExternal().equals(abs(l.getIdExternal()))).findFirst()
+					.orElse(null);
+
+			if (loc != null) {
+				if (e.getIdExternal().equals(loc.getIdExternal())) {
+					int compare = loc.getUpdatedAt().compareTo(e.getUpdatedAt());
+					if (compare == 0) {
+						if (loc.hashCode() == e.hashCode())
+							Equals.add(loc);
+						else
+							NotEquals.add(loc);
+					} else if (compare < 0) {
+						e.setIdLocal(loc.getIdLocal());
+						NewerInExt.add(e);
+					} else {
+						NewerInLoc.add(loc);
+					}
+				} else {
+					DeleteFromExt.add(e);
+					DeleteFromLoc.add(e);
+				}
+			} else {
+				;
+				AddToLoc.add(e);
+			}
+		});
+
+		tsrLoc.stream().forEach(l -> {
+			if (l.getIdExternal() == 0) {
+				AddToExt.add(l);
+			} else if (tsrExt.stream().noneMatch(e -> e.getIdExternal().equals(abs(l.getIdExternal())))) {
+				DeleteFromLoc.add(l);
+			}
+
+		});
+
+		System.out.println("AddToLoc:" + AddToLoc.size());
+		AddToLoc.forEach(l -> System.out.println(l.toString()));
+		System.out.println("AddToExt:" + AddToExt.size());
+		AddToExt.forEach(l -> System.out.println(l.toString()));
+		System.out.println("DeleteFromLoc:" + DeleteFromLoc.size());
+		DeleteFromLoc.forEach(l -> System.out.println(l.toString()));
+		System.out.println("DeleteFromExt:" + DeleteFromExt.size());
+		DeleteFromExt.forEach(l -> System.out.println(l.toString()));
+		System.out.println("NewerInLoc:" + NewerInLoc.size());
+		NewerInLoc.forEach(l -> System.out.println(l.toString()));
+		System.out.println("NewerInExt:" + NewerInExt.size());
+		NewerInExt.forEach(l -> System.out.println(l.toString()));
+		System.out.println("Equals:" + Equals.size());
+		Equals.forEach(l -> System.out.println(l.toString()));
+		System.out.println("NotEquals:" + NotEquals.size());
+		NotEquals.forEach(l -> System.out.println(l.toString()));
+
 		
-		System.out.println("updated: " + test.getUpdated().size());
-		System.out.println("newer in loc: " + test.getNewerLoc().size());
-		System.out.println("newer in ext: " + test.getNewerExt().size());
-	}
+		List<TimesheetRow> newTsrExt = dataset.getExtDataSet();
+		List<TimesheetRow> newTsrLoc = dataset.getLocDataSet();
 
+		newTsrExt.addAll(AddToExt);
+		newTsrExt.removeIf(n -> DeleteFromExt.stream().anyMatch(d -> d.getIdExternal().equals(n.getIdExternal())));
+		NewerInLoc.forEach(n -> {
+			int index = newTsrExt.indexOf(
+					newTsrExt.stream().filter(d -> d.getIdExternal().equals(n.getIdExternal())).findFirst().get());
+			newTsrExt.set(index, n);
+		});
+		System.out.println("EXT NEW *************************************************************************");
+		newTsrExt.forEach(e -> System.out.println(e));
+		
+		newTsrLoc.addAll(AddToLoc);
+		newTsrLoc.removeIf(n -> DeleteFromLoc.stream().anyMatch(d -> d.getIdExternal().equals(abs(n.getIdExternal()))));
+		NewerInExt.forEach(n -> {
+			int index = newTsrLoc.indexOf(
+					newTsrLoc.stream().filter(d -> d.getIdExternal().equals(n.getIdExternal())).findFirst().get());
+			newTsrLoc.set(index, n);
+		});
+		System.out.println("LOC NEW *************************************************************************");
+		newTsrLoc.forEach(e -> System.out.println(e));
+	}
 }
